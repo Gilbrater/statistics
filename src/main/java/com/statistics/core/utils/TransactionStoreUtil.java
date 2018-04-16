@@ -40,6 +40,18 @@ public class TransactionStoreUtil{
             secondsSummary.setMin((transactionAmount<minForSecond)?transactionAmount:minForSecond);
         }
         transactionSummaryPerSecond.put(transactionTimeInEpochSec, secondsSummary);
+        expireOldRecords(currentTime, interval);
+    }
+
+    private void expireOldRecords( long currentTime, long interval){
+        ConcurrentMap<Long, SecondsSummary> newestTransactions = new ConcurrentHashMap<>();
+        for(long i=currentTime; i>currentTime-interval; i--){
+            SecondsSummary secondsSummary = transactionSummaryPerSecond.get(i);
+            if(secondsSummary!=null){
+                newestTransactions.put(i, secondsSummary);
+            }
+        }
+        transactionSummaryPerSecond=newestTransactions;
     }
 
     public Statistics getStatistics(long currentTime, long interval){
