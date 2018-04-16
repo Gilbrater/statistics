@@ -88,4 +88,8 @@ public class TransactionStoreUtil{
         statistics.setMin(min);
         return statistics;
     }
+
+    public synchronized void clear() {
+        transactionSummaryPerSecond = new ConcurrentHashMap<>();
+    }
 }

@@ -22,7 +22,6 @@ public class StatisticsService {
         transactionStoreUtil = TransactionStoreUtil.getInstance();
     }
 
-    //Transaction transaction, Long transactionTimeInEpochSec, long currentTime, long interval
     public boolean saveTransaction(Transaction transaction, Long currentTime){
         Instant transactionTimeInstant = Instant.ofEpochMilli(transaction.getTimestamp());
         long transactionTime = transactionTimeInstant.getEpochSecond();
