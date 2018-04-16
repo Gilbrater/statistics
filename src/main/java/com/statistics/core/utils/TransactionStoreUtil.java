@@ -23,7 +23,23 @@ public class TransactionStoreUtil{
     }
 
     public synchronized void addTransaction(Transaction transaction, Long transactionTimeInEpochSec, long currentTime, long interval){
+        SecondsSummary secondsSummary;
+        double transactionAmount = transaction.getAmount();
+        if(!transactionSummaryPerSecond.containsKey(transactionTimeInEpochSec)){
+            secondsSummary = new SecondsSummary(transactionAmount, 1, transactionAmount, transactionAmount);
+        }else{
+            secondsSummary = transactionSummaryPerSecond.get(transactionTimeInEpochSec);
+            double totalAmount = secondsSummary.getTotalAmount();
+            long numberOfTransactions = secondsSummary.getNumberOfTransactions();
+            double maxForSecond = secondsSummary.getMax();
+            double minForSecond = secondsSummary.getMin();
 
+            secondsSummary.setTotalAmount(totalAmount+transactionAmount);
+            secondsSummary.setNumberOfTransactions(numberOfTransactions+1);
+            secondsSummary.setMax((transactionAmount>maxForSecond)?transactionAmount:maxForSecond);
+            secondsSummary.setMin((transactionAmount<minForSecond)?transactionAmount:minForSecond);
+        }
+        transactionSummaryPerSecond.put(transactionTimeInEpochSec, secondsSummary);
     }
 
     public Statistics getStatistics(long currentTime, long interval){
